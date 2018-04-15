@@ -42,8 +42,8 @@ typedef const struct State StateType;
 StateType fsm[6] {
   {0x1111, 100, {1, 3, 2, 0}},
   {0x2222, 500, {1, 3, 2, 0}},
-  {0x2112, 100, {2, 2, 2, 0}},
-  {0x1221, 100, {3, 3, 3, 0}}
+  {0x2112, 100, {1, 2, 2, 0}},
+  {0x1221, 100, {1, 3, 3, 0}}
 };
 
 // Initialize current state to default (0)
