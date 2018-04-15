@@ -14,25 +14,6 @@
 #define FL_SENSOR 14
 #define FR_SENSOR 15
 
-/* 
- *  Define Car Maneuvers
- *  M1 - BACK LEFT
- *  M2 - BACK RIGHT
- *  M3 - FRONT RIGHT
- *  M4 - FRONT LEFT
- *  
- *  FORWARD - 1
- *  BACKWARD - 2
- *  BREAKE - 3
- *  RELEASE - 4
- */
-#define GO_BACKWARD   0x2222
-#define GO_FORWARD    0x1111
-#define ROTATE_LEFT   0x2112
-#define ROTATE_RIGHT  0x1221
-#define TURN_LEFT     0x3113
-#define TURN_RIGHT    0x1331
-
 /*
 * Create MotorDriver
 * D0 - D13 and A0- A7 are used by the Shield
@@ -48,6 +29,26 @@ void moveCar(int mv) {
   }
 }
 
+/*
+ * Create FSM struct
+ */
+struct State {
+  int sOutput;    // Output for Motor Movement
+  int sDelay;     // How long to stay in state
+  int sNext[4];   // Next State based on Inputs
+};
+typedef const struct State StateType;
+
+StateType fsm[6] {
+  {0x1111, 100, {1, 3, 2, 0}},
+  {0x2222, 500, {1, 3, 2, 0}},
+  {0x2112, 100, {2, 2, 2, 0}},
+  {0x1221, 100, {3, 3, 3, 0}}
+};
+
+// Initialize current state to default (0)
+int cState = 0;
+
 void setup() {
   // Setup Sensor Pins as inputs
   pinMode(FL_SENSOR, INPUT);
@@ -55,5 +56,15 @@ void setup() {
 }
 
 void loop() {
-  
+  // Move car based on current state
+  moveCar(fsm[cState].sOutput);
+
+  // Delay for the current state's said delay
+  delay(fsm[cState].sDelay);
+
+  // Change state based on input
+  int L_input = (digitalRead(FL_SENSOR) << 1) & 0x3;
+  int R_input = digitalRead(FR_SENSOR) & 0x1;
+  int input = L_input | R_input;
+  cState = fsm[cState].sNext[input];
 }
