@@ -5,11 +5,14 @@
 #include <MotorDriver.h>
 
 // Define Wheels
-#define BACK_L 1
-#define BACK_R 2
-#define FRONT_R 3
-#define FRONT_L 4
+#define BL_WHEEL 1
+#define BR_WHEEL 2
+#define FR_WHEEL 3
+#define FL_WHEEL 4
 
+// Define Sensors
+#define FL_SENSOR 14
+#define FR_SENSOR 15
 
 /*
 * Create MotorDriver
@@ -18,9 +21,11 @@
 MotorDriver m;
 
 void setup() {
-
+  // Setup Sensor Pins as inputs
+  pinMode(FL_SENSOR, INPUT);
+  pinMode(FR_SENSOR, INPUT);
 }
 
 void loop() {
-  m.motor(FRONT_L, FORWARD, 255);
+  m.motor(FL_WHEEL, FORWARD, 255);
 }
