@@ -58,12 +58,12 @@ typedef const struct State StateType;
  */
 
 StateType fsm[6] {
-  {GO_FORWARD,  10, {1, 3, 2, 0}},
-  {GO_BACKWARD, 500, {1, 3, 2, 0}},
-  {GO_BACKWARD, 500, {2, 2, 2, 4}},
-  {GO_BACKWARD, 500, {3, 3, 3, 5}},
-  {TURN_LEFT,   500, {2, 2, 2, 0}},
-  {TURN_RIGHT,  500, {3, 3, 3, 0}}
+  {GO_FORWARD,    10, {1, 3, 2, 0}},
+  {GO_BACKWARD,  500, {1, 3, 2, 0}},
+  {GO_BACKWARD,  500, {2, 2, 2, 4}},
+  {GO_BACKWARD,  500, {3, 3, 3, 5}},
+  {TURN_LEFT,   1000, {2, 2, 2, 0}},
+  {TURN_RIGHT,  1000, {3, 3, 3, 0}}
 };
 
 // Initialize current state to default (0)
