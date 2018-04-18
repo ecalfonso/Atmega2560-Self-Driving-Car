@@ -55,15 +55,19 @@ typedef const struct State StateType;
  * s3 - Rev then Right
  * s4 - Turn Left
  * s5 - Turn Right
+ * s6 - Pre-forward Left
+ * s7 - Pre-forward Right
  */
 
-StateType fsm[6] {
+StateType fsm[8] {
   {GO_FORWARD,    10, {1, 3, 2, 0}},
   {GO_BACKWARD,  500, {1, 3, 2, 0}},
   {GO_BACKWARD,  500, {2, 2, 2, 4}},
   {GO_BACKWARD,  500, {3, 3, 3, 5}},
-  {TURN_LEFT,   1000, {2, 2, 2, 0}},
-  {TURN_RIGHT,  1000, {3, 3, 3, 0}}
+  {TURN_LEFT,   1000, {2, 2, 2, 6}},
+  {TURN_RIGHT,  1000, {3, 3, 3, 7}},
+  {GO_FORWARD,   500, {2, 2, 2, 0}},
+  {GO_FORWARD,   500, {3, 3, 3, 0}}
 };
 
 // Initialize current state to default (0)
