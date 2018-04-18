@@ -19,6 +19,8 @@
 #define GO_BACKWARD   0x2222
 #define TURN_LEFT     0x2112
 #define TURN_RIGHT    0x1221
+#define FULL_STOP     0x3333
+#define MOTOR_RELEASE 0x4444
 
 /*
 * Create MotorDriver
@@ -65,6 +67,7 @@ StateType fsm[6] {
 };
 
 // Initialize current state to default (0)
+int pState = -1;
 int cState = 0;
 
 void setup() {
@@ -74,11 +77,22 @@ void setup() {
 }
 
 void loop() {
-  // Move car based on current state
-  moveCar(fsm[cState].sOutput);
+  // Only change motor direction if states changed
+  if (pState != cState) {
+    // Stop motors before new state
+    moveCar(MOTOR_RELEASE);
+    delay(50);
+
+    // Move car based on new state
+    moveCar(fsm[cState].sOutput);
+  }
+  
 
   // Delay for the current state's said delay
   delay(fsm[cState].sDelay);
+
+  // Save previous state
+  pState = cState;
 
   // Change state based on input
   int L_input = (digitalRead(FL_SENSOR) << 1) & 0x3;
