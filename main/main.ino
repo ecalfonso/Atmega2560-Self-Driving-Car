@@ -86,7 +86,6 @@ void loop() {
     // Move car based on new state
     moveCar(fsm[cState].sOutput);
   }
-  
 
   // Delay for the current state's said delay
   delay(fsm[cState].sDelay);
