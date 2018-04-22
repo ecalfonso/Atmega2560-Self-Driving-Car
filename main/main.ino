@@ -44,31 +44,33 @@ void moveCar(int mv) {
 struct State {
   int sOutput;    // Output for Motor Movement
   int sDelay;     // How long to stay in state
-  int sNext[4];   // Next State based on Inputs
+  int sNext[8];   // Next State based on Inputs
 };
 typedef const struct State StateType;
 
 /*
  * FSM Structure:
- * s0 - Forward
- * s1 - Reverse
- * s2 - Rev then Left
- * s3 - Rev then Right
- * s4 - Turn Left
- * s5 - Turn Right
- * s6 - Pre-forward Left
- * s7 - Pre-forward Right
  */
+#define FWD   0 // Forward
+#define REV   1 // Reverse
+#define RTL   2 // Rev then Left
+#define RTR   3 // Rev then Right
+#define TL    4 // Turn Left
+#define TR    5 // Turn Right
+#define PREL  6 // Pre-forward Left
+#define PRER  7 // Pre-forward Right
+#define STOP  8 // Stop
 
-StateType fsm[8] {
-  {GO_FORWARD,    10, {1, 3, 2, 0}},
-  {GO_BACKWARD,  500, {1, 3, 2, 0}},
-  {GO_BACKWARD,  500, {2, 2, 2, 4}},
-  {GO_BACKWARD,  500, {3, 3, 3, 5}},
-  {TURN_LEFT,   1000, {2, 2, 2, 6}},
-  {TURN_RIGHT,  1000, {3, 3, 3, 7}},
-  {GO_FORWARD,   500, {2, 2, 2, 0}},
-  {GO_FORWARD,   500, {3, 3, 3, 0}}
+StateType fsm[9] {
+  {GO_FORWARD,    10, {STOP, TR, TL,  FWD, REV, RTR, RTL,  FWD}},
+  {GO_BACKWARD,  500, {STOP, TR, TL,   TR, REV, RTR, RTL,   TL}},
+  {GO_BACKWARD,  500, {STOP, TR, TL,   TL, RTL, RTL, RTL,   TL}},
+  {GO_BACKWARD,  500, {STOP, TR, TL,   TR, RTR, RTR, RTR,   TR}},
+  {TURN_LEFT,   1000, {STOP, TR, TL, PREL, RTL, RTL, RTL, PREL}},
+  {TURN_RIGHT,  1000, {STOP, TR, TL, PRER, RTR, RTR, RTR, PRER}},
+  {GO_FORWARD,   500, {STOP, TR, TL,  FWD, RTL, RTL, RTL,  FWD}},
+  {GO_FORWARD,   500, {STOP, TR, TL,  FWD, RTR, RTR, RTR,  FWD}},
+  {FULL_STOP,   1000, {STOP, TR, TL,  FWD,  TR, RTR, RTL,  FWD}}
 };
 
 // Initialize current state to default (0)
@@ -86,8 +88,11 @@ void loop() {
   // Only change motor direction if states changed
   if (pState != cState) {
     // Stop motors before new state
-    moveCar(MOTOR_RELEASE);
-    delay(50);
+    // But don't stop if moving from PRER/PREL -> FWD
+   if ((pState == PREL || pState == PRER) && cState == FWD) { 
+      moveCar(MOTOR_RELEASE);
+      delay(50);
+  }
 
     // Move car based on new state
     moveCar(fsm[cState].sOutput);
@@ -100,8 +105,9 @@ void loop() {
   pState = cState;
 
   // Change state based on input
-  int L_input = (digitalRead(FL_SENSOR) << 1) & 0x3;
+  int B_input = (digitalRead(BK_SENSOR) << 2) & 0x4;
+  int L_input = (digitalRead(FL_SENSOR) << 1) & 0x2;
   int R_input = digitalRead(FR_SENSOR) & 0x1;
-  int input = L_input | R_input;
+  int input = B_input | L_input | R_input;
   cState = fsm[cState].sNext[input];
 }
