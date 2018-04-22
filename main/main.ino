@@ -13,6 +13,7 @@
 // Define Sensors
 #define FL_SENSOR 14
 #define FR_SENSOR 15
+#define BK_SENSOR 16
 
 // Define Car Motor Maneuvers
 #define GO_FORWARD    0x1111
@@ -78,6 +79,7 @@ void setup() {
   // Setup Sensor Pins as inputs
   pinMode(FL_SENSOR, INPUT);
   pinMode(FR_SENSOR, INPUT);
+  pinMode(BK_SENSOR, INPUT);
 }
 
 void loop() {
